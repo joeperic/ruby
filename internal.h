@@ -806,7 +806,7 @@ struct RHash {
         st_table *st;
         struct ar_table_struct *ar; /* possibly 0 */
     } as;
-    int iter_lev;
+    const int iter_lev;
     const VALUE ifnone;
 };
 
@@ -1595,15 +1595,15 @@ VALUE rb_math_sqrt(VALUE);
 /* mjit.c */
 
 #if USE_MJIT
-extern int mjit_enabled;
-VALUE mjit_pause(int wait_p);
+extern bool mjit_enabled;
+VALUE mjit_pause(bool wait_p);
 VALUE mjit_resume(void);
-void mjit_finish(int close_handle_p);
+void mjit_finish(bool close_handle_p);
 #else
 #define mjit_enabled 0
-static inline VALUE mjit_pause(int wait_p){ return Qnil; } /* unreachable */
-static inline VALUE mjit_resume(void){ return Qnil; } /* unreachable */
-static inline void mjit_finish(int close_handle_p){}
+static inline VALUE mjit_pause(bool wait_p){ return Qnil; } // unreachable
+static inline VALUE mjit_resume(void){ return Qnil; } // unreachable
+static inline void mjit_finish(bool close_handle_p){}
 #endif
 
 /* newline.c */
@@ -1616,6 +1616,8 @@ void Init_newline(void);
 #define FIXNUM_ZERO_P(num) ((num) == INT2FIX(0))
 
 #define INT_NEGATIVE_P(x) (FIXNUM_P(x) ? FIXNUM_NEGATIVE_P(x) : BIGNUM_NEGATIVE_P(x))
+
+#define FLOAT_ZERO_P(x) (RFLOAT_VALUE(x) == 0.0)
 
 #ifndef ROUND_DEFAULT
 # define ROUND_DEFAULT RUBY_NUM_ROUND_HALF_UP
@@ -2021,6 +2023,7 @@ VALUE rb_sym_to_proc(VALUE sym);
 char *rb_str_to_cstr(VALUE str);
 VALUE rb_str_eql(VALUE str1, VALUE str2);
 VALUE rb_obj_as_string_result(VALUE str, VALUE obj);
+const char *ruby_escaped_char(int c);
 
 /* symbol.c */
 #ifdef RUBY_ENCODING_H

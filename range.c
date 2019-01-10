@@ -1088,7 +1088,8 @@ range_last(int argc, VALUE *argv, VALUE range)
 
     b = RANGE_BEG(range);
     e = RANGE_END(range);
-    if (RB_INTEGER_TYPE_P(b) && RB_INTEGER_TYPE_P(e)) {
+    if (RB_INTEGER_TYPE_P(b) && RB_INTEGER_TYPE_P(e) &&
+        RB_LIKELY(rb_method_basic_definition_p(rb_cRange, idEach))) {
         return rb_int_range_last(argc, argv, range);
     }
     return rb_ary_last(argc, argv, rb_Array(range));
@@ -1471,9 +1472,11 @@ r_cover_range_p(VALUE range, VALUE beg, VALUE end, VALUE val)
 
     if (EXCL(range) == EXCL(val)) {
         return cmp_end >= 0;
-    } else if (EXCL(range)) {
+    }
+    else if (EXCL(range)) {
         return cmp_end > 0;
-    } else if (cmp_end >= 0) {
+    }
+    else if (cmp_end >= 0) {
         return TRUE;
     }
 
